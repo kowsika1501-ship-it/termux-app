@@ -1,0 +1,27 @@
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)  # Allow frontend requests
+
+@app.route("/optimize", methods=["POST"])
+def optimize():
+    data = request.get_json()
+    density = data.get("density", 50)  # Traffic density %
+
+    # Simple AI logic (adjust cycle times based on density)
+    if density > 70:
+        suggestion = "High traffic – increase green time"
+        cycle = {"red": 5, "green": 10, "yellow": 3}
+    elif density > 40:
+        suggestion = "Medium traffic – balanced timing"
+        cycle = {"red": 6, "green": 8, "yellow": 3}
+    else:
+        suggestion = "Low traffic – reduce green time"
+        cycle = {"red": 8, "green": 5, "yellow": 3}
+
+    return jsonify({"suggestion": suggestion, "cycle": cycle})
+
+if __name__ == "__main__":
+    # 0.0.0.0 means it will be accessible from mobile browser via local IP
+    app.run(host="0.0.0.0", port=5000, debug=True)
